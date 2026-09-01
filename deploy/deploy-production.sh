@@ -114,6 +114,28 @@ install -d -m 0755 "$RELEASE_DIR"
   --output "$RELEASE_DIR" \
   --nologo
 
+log "Validando contenido del artefacto publicado"
+REQUIRED_PUBLISH_FILES=(
+  "index.html"
+  "contacto.html"
+  "empresa.html"
+  "servicios.html"
+  "sectores.html"
+  "404.html"
+  "robots.txt"
+  "sitemap.xml"
+  "site.webmanifest"
+  "assets/css/site-v3.css"
+  "assets/css/site-v4.css"
+  "assets/js/site-v3.js"
+  "brand/arvecta-logo.png"
+  "brand/arvecta-logo-white.png"
+)
+for required in "${REQUIRED_PUBLISH_FILES[@]}"; do
+  [[ -f "$RELEASE_DIR/$required" ]] || fail "El publish está incompleto: falta $required"
+done
+echo "[publish] STATIC_ASSETS=OK"
+
 chown -R root:root "$RELEASE_DIR"
 find "$RELEASE_DIR" -type d -exec chmod 0755 {} +
 find "$RELEASE_DIR" -type f -exec chmod 0644 {} +
@@ -158,12 +180,22 @@ curl -fsS "http://127.0.0.1:${APP_PORT}/health/live" | sed 's/^/[health-live] /'
 printf '\n'
 curl -fsS "http://127.0.0.1:${APP_PORT}/health/ready" | sed 's/^/[health-ready] /'
 printf '\n'
+
+HOME_TMP="$(mktemp)"
+trap 'rm -f "$HOME_TMP"' EXIT
 if [[ "$TLS_ENABLED" -eq 1 ]]; then
-  curl -kfsS --resolve arvecta.mx:443:127.0.0.1 "https://arvecta.mx/health/live" | sed 's/^/[nginx-https] /'
+  curl --noproxy '*' -kfsS --resolve arvecta.mx:443:127.0.0.1 "https://arvecta.mx/health/live" | sed 's/^/[nginx-https] /'
+  printf '\n'
+  curl --noproxy '*' -kfsS --resolve arvecta.mx:443:127.0.0.1 "https://arvecta.mx/" -o "$HOME_TMP"
 else
   curl -fsS -H 'Host: arvecta.mx' "http://127.0.0.1/health/live" | sed 's/^/[nginx-http] /'
+  printf '\n'
+  curl -fsS -H 'Host: arvecta.mx' "http://127.0.0.1/" -o "$HOME_TMP"
 fi
-printf '\n'
+grep -qi 'ARVECTA' "$HOME_TMP" || fail "La Home respondió pero no contiene la marca ARVECTA."
+echo "[home] HTTP_200_CONTENT=OK"
+rm -f "$HOME_TMP"
+trap - EXIT
 
 log "Estado de servicios"
 systemctl --no-pager --full status arvecta.service | sed -n '1,18p'
@@ -186,4 +218,4 @@ echo "APP=http://127.0.0.1:${APP_PORT}"
 echo "NGINX_HOST=arvecta.mx"
 echo "TLS_ENABLED=$TLS_ENABLED"
 echo "ENV_FILE=$ENV_FILE"
-echo "NEXT=Si TLS_ENABLED=0 crea Cloudflare Origin CA y ejecuta deploy/setup-cloudflare-origin-from-mac.sh; después usa Cloudflare Full (strict)."
+echo "NEXT=Cloudflare Full (strict) + validación pública de Home, Contacto y formulario."
