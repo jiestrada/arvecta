@@ -22,6 +22,8 @@ git -C "$SOURCE_DIR" reset --hard origin/main
 
 log "Validando certificado Cloudflare Origin CA"
 openssl x509 -in "$CERT_FILE" -noout -subject -issuer -dates
+openssl x509 -in "$CERT_FILE" -noout -checkhost arvecta.mx >/dev/null || fail "El certificado no cubre arvecta.mx"
+openssl x509 -in "$CERT_FILE" -noout -checkhost www.arvecta.mx >/dev/null || fail "El certificado no cubre www.arvecta.mx"
 openssl pkey -in "$CERT_KEY" -noout >/dev/null
 CERT_PUB="$(openssl x509 -in "$CERT_FILE" -pubkey -noout | openssl pkey -pubin -outform der 2>/dev/null | sha256sum | awk '{print $1}')"
 KEY_PUB="$(openssl pkey -in "$CERT_KEY" -pubout -outform der 2>/dev/null | sha256sum | awk '{print $1}')"
@@ -34,9 +36,9 @@ nginx -t
 systemctl reload nginx
 
 log "Validando HTTPS directamente contra el origin"
-curl -kfsS --resolve arvecta.mx:443:127.0.0.1 https://arvecta.mx/health/live | sed 's/^/[origin-https] /'
+curl --noproxy '*' -kfsS --resolve arvecta.mx:443:127.0.0.1 https://arvecta.mx/health/live | sed 's/^/[origin-https] /'
 printf '\n'
-curl -kfsSI --resolve www.arvecta.mx:443:127.0.0.1 https://www.arvecta.mx/ | sed -n '1,6p' | sed 's/^/[www-origin] /'
+curl --noproxy '*' -kfsSI --resolve www.arvecta.mx:443:127.0.0.1 https://www.arvecta.mx/ | sed -n '1,6p' | sed 's/^/[www-origin] /'
 
 log "CLOUDFLARE ORIGIN TLS SUCCESS"
 echo "CERT=$CERT_FILE"
