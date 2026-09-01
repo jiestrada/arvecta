@@ -3,5 +3,11 @@
 .contact-brief .problem-list{margin-top:34px}
 .contact-brief .problem-row{grid-template-columns:70px 1fr;padding:22px 0}
 .contact-brief .problem-row h3{font-size:22px}
+.contact-form button[disabled]{opacity:.65;cursor:wait}
+.form-status{margin-top:14px;padding:13px 15px;border:1px solid var(--line);font-size:14px;line-height:1.45;background:#fff}
+.form-status.pending{border-color:#a8c0ff;color:#244a9f;background:#f4f7ff}
+.form-status.success{border-color:#90d8be;color:#0d6c49;background:#f0fbf6}
+.form-status.error{border-color:#efb1b1;color:#9b2d2d;background:#fff5f5}
+.hp-field{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important;opacity:0!important;pointer-events:none!important}
 @media(max-width:900px){.contact-page-grid{grid-template-columns:1fr;gap:42px}}
 @media(max-width:640px){.contact-form-panel{padding:28px 20px}.contact-brief .problem-row{grid-template-columns:48px 1fr}.contact-brief .problem-row p{grid-column:2}}
