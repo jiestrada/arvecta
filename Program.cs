@@ -71,11 +71,33 @@ contentTypes.Mappings[".webp"] = "image/webp";
 contentTypes.Mappings[".jpg"] = "image/jpeg";
 contentTypes.Mappings[".jpeg"] = "image/jpeg";
 
-app.UseDefaultFiles(new DefaultFilesOptions
+// Serve the corporate homepage explicitly. Do not depend on DefaultFiles for the
+// repository-root static-site layout used by ARVECTA's published artifact.
+app.Use(async (context, next) =>
 {
-    FileProvider = rootProvider,
-    DefaultFileNames = ["index.html"]
+    if (context.Request.Path == "/" &&
+        (HttpMethods.IsGet(context.Request.Method) || HttpMethods.IsHead(context.Request.Method)))
+    {
+        var indexPath = Path.Combine(app.Environment.ContentRootPath, "index.html");
+        if (!File.Exists(indexPath))
+        {
+            app.Logger.LogError("ARVECTA homepage missing at {IndexPath}", indexPath);
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await context.Response.WriteAsync("ARVECTA homepage is unavailable.");
+            return;
+        }
+
+        context.Response.StatusCode = StatusCodes.Status200OK;
+        context.Response.ContentType = "text/html; charset=utf-8";
+        context.Response.Headers.CacheControl = "no-cache";
+        if (!HttpMethods.IsHead(context.Request.Method))
+            await context.Response.SendFileAsync(indexPath);
+        return;
+    }
+
+    await next();
 });
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = rootProvider,
