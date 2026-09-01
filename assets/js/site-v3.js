@@ -83,7 +83,10 @@ const showConsentBanner=()=>{
 document.querySelectorAll('[data-cookie-settings]').forEach(button=>button.addEventListener('click',showConsentBanner));
 const initialConsent=readConsent();
 if(initialConsent?.analytics==='granted')loadAnalytics();
-else if(!initialConsent)showConsentBanner();
+else{
+  clearAnalyticsCookies();
+  if(!initialConsent)showConsentBanner();
+}
 
 const header=document.querySelector('.site-header');
 const menuButton=document.querySelector('[data-menu]');
