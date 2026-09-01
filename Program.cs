@@ -2,6 +2,7 @@ using System.Net;
 using System.Threading.RateLimiting;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
@@ -14,6 +15,12 @@ builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, relo
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddSingleton<ContactEmailSender>();
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownProxies.Add(IPAddress.Loopback);
+    options.KnownProxies.Add(IPAddress.IPv6Loopback);
+});
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -30,6 +37,20 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
+
+if (!app.Environment.IsDevelopment())
+    app.UseHsts();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+    context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()";
+    await next();
+});
 
 app.UseRateLimiter();
 app.UseHttpsRedirection();
@@ -59,10 +80,31 @@ app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = rootProvider,
     ContentTypeProvider = contentTypes,
-    ServeUnknownFileTypes = false
+    ServeUnknownFileTypes = false,
+    OnPrepareResponse = context =>
+    {
+        var path = context.File.Name;
+        if (path.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+            context.Context.Response.Headers.CacheControl = "no-cache";
+        else
+            context.Context.Response.Headers.CacheControl = "public,max-age=86400";
+    }
 });
 
 app.MapGet("/health/live", () => Results.Ok(new { status = "ok", service = "arvecta-web" }));
+app.MapGet("/health/ready", (IOptions<EmailSettings> options) =>
+{
+    var settings = options.Value;
+    var ready = !string.IsNullOrWhiteSpace(settings.SmtpHost) &&
+                !string.IsNullOrWhiteSpace(settings.SmtpUser) &&
+                !string.IsNullOrWhiteSpace(settings.SmtpPassword) &&
+                !string.IsNullOrWhiteSpace(settings.FromEmail) &&
+                !string.IsNullOrWhiteSpace(settings.ToEmail);
+
+    return ready
+        ? Results.Ok(new { status = "ready", service = "arvecta-web", email = "configured" })
+        : Results.Json(new { status = "not-ready", service = "arvecta-web", email = "not-configured" }, statusCode: StatusCodes.Status503ServiceUnavailable);
+});
 
 app.MapPost("/api/contact", async (ContactRequest request, HttpContext context, ContactEmailSender sender, CancellationToken cancellationToken) =>
 {
@@ -113,6 +155,7 @@ app.MapFallback(async context =>
     await context.Response.SendFileAsync(Path.Combine(app.Environment.ContentRootPath, "404.html"));
 });
 
+app.Logger.LogInformation("ARVECTA web starting in {Environment}", app.Environment.EnvironmentName);
 app.Run();
 
 public sealed record ContactRequest(string? Name, string? Company, string? Email, string? Type, string? Message, string? Website);
@@ -163,7 +206,7 @@ public sealed class ContactEmailSender(IOptions<EmailSettings> options, ILogger<
             email.ReplyTo.Add(new MailboxAddress(contact.Name, contact.Email));
             email.Subject = $"Nuevo contacto ARVECTA — {(string.IsNullOrWhiteSpace(contact.Company) ? contact.Name : contact.Company)}";
 
-            var builder = new BodyBuilder
+            var bodyBuilder = new BodyBuilder
             {
                 TextBody = $"Nombre: {contact.Name}\nEmpresa: {contact.Company}\nCorreo: {contact.Email}\nNecesidad: {contact.Type}\n\nMensaje:\n{contact.Message}",
                 HtmlBody = $"""
@@ -181,7 +224,7 @@ public sealed class ContactEmailSender(IOptions<EmailSettings> options, ILogger<
                     </div>
                     """
             };
-            email.Body = builder.ToMessageBody();
+            email.Body = bodyBuilder.ToMessageBody();
 
             using var client = new SmtpClient();
             await client.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, ParseSecurity(_settings.Security), cancellationToken);
