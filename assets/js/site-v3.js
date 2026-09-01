@@ -1,3 +1,15 @@
+const GA_MEASUREMENT_ID='G-DVKX7DGK9T';
+window.dataLayer=window.dataLayer||[];
+window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};
+window.gtag('js',new Date());
+window.gtag('config',GA_MEASUREMENT_ID);
+if(!document.querySelector(`script[src*="${GA_MEASUREMENT_ID}"]`)){
+  const googleTag=document.createElement('script');
+  googleTag.async=true;
+  googleTag.src=`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+  document.head.appendChild(googleTag);
+}
+
 const header=document.querySelector('.site-header');
 const menuButton=document.querySelector('[data-menu]');
 const mobileNav=document.querySelector('[data-mobile-nav]');
@@ -76,6 +88,11 @@ if(form){
       if(!response.ok||!result.ok){
         throw new Error(result.error||'No pudimos enviar el mensaje en este momento.');
       }
+
+      window.gtag('event','generate_lead',{
+        event_category:'contact',
+        event_label:payload.type||'unspecified'
+      });
 
       form.reset();
       setStatus(result.message||'Mensaje enviado. Gracias por contactar a ARVECTA.','success');
