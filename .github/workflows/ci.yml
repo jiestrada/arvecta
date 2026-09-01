@@ -26,3 +26,31 @@ jobs:
 
       - name: Build
         run: dotnet build Arvecta.Web.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish Arvecta.Web.csproj --configuration Release --no-build --output ./publish
+
+      - name: Verify published website
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            index.html
+            contacto.html
+            empresa.html
+            servicios.html
+            sectores.html
+            404.html
+            robots.txt
+            sitemap.xml
+            site.webmanifest
+            assets/css/site-v3.css
+            assets/css/site-v4.css
+            assets/js/site-v3.js
+            brand/arvecta-logo.png
+            brand/arvecta-logo-white.png
+          )
+          for file in "${required[@]}"; do
+            test -f "publish/$file" || { echo "Missing publish/$file"; exit 1; }
+          done
+          echo "STATIC_PUBLISH=OK"
