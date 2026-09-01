@@ -128,10 +128,13 @@ app.MapGet("/health/ready", (IOptions<EmailSettings> options) =>
         : Results.Json(new { status = "not-ready", service = "arvecta-web", email = "not-configured" }, statusCode: StatusCodes.Status503ServiceUnavailable);
 });
 
-app.MapPost("/api/contact", async (ContactRequest request, HttpContext context, ContactEmailSender sender, CancellationToken cancellationToken) =>
+app.MapPost("/api/contact", async (ContactRequest request, ContactEmailSender sender, CancellationToken cancellationToken) =>
 {
     if (!string.IsNullOrWhiteSpace(request.Website))
         return Results.Ok(new { ok = true });
+
+    if (!request.PrivacyNoticeAccepted)
+        return Results.BadRequest(new { ok = false, error = "Confirma que has leído el Aviso de Privacidad para enviar el mensaje." });
 
     var name = request.Name?.Trim() ?? string.Empty;
     var company = request.Company?.Trim() ?? string.Empty;
@@ -159,14 +162,15 @@ app.MapPost("/api/contact", async (ContactRequest request, HttpContext context, 
         return Results.BadRequest(new { ok = false, error = "Escribe un correo válido." });
     }
 
-    var result = await sender.SendContactAsync(new ContactMessage(name, company, email, type, message), cancellationToken);
+    var result = await sender.SendContactAsync(new ContactMessage(name, company, email, type, message, true), cancellationToken);
     if (!result.Success)
     {
         app.Logger.LogError("Contact email failed: {Reason}", result.Error);
         return Results.Json(new { ok = false, error = "No pudimos enviar el mensaje en este momento. Intenta de nuevo o escribe a contacto@arvecta.mx." }, statusCode: StatusCodes.Status503ServiceUnavailable);
     }
 
-    app.Logger.LogInformation("Contact message sent for {Company} from {Email} via {RemoteIp}", company, email, context.Connection.RemoteIpAddress);
+    // Do not write prospect names, emails, companies or message contents to application logs.
+    app.Logger.LogInformation("ARVECTA contact message sent successfully.");
     return Results.Ok(new { ok = true, message = "Mensaje enviado. Gracias por contactar a ARVECTA." });
 }).RequireRateLimiting("contact");
 
@@ -180,8 +184,8 @@ app.MapFallback(async context =>
 app.Logger.LogInformation("ARVECTA web starting in {Environment}", app.Environment.EnvironmentName);
 app.Run();
 
-public sealed record ContactRequest(string? Name, string? Company, string? Email, string? Type, string? Message, string? Website);
-public sealed record ContactMessage(string Name, string Company, string Email, string Type, string Message);
+public sealed record ContactRequest(string? Name, string? Company, string? Email, string? Type, string? Message, string? Website, bool PrivacyNoticeAccepted);
+public sealed record ContactMessage(string Name, string Company, string Email, string Type, string Message, bool PrivacyNoticeAccepted);
 public sealed record SendResult(bool Success, string? Error = null);
 
 public sealed class EmailSettings
@@ -219,6 +223,7 @@ public sealed class ContactEmailSender(IOptions<EmailSettings> options, ILogger<
             var safeEmail = WebUtility.HtmlEncode(contact.Email);
             var safeType = WebUtility.HtmlEncode(contact.Type);
             var safeMessage = WebUtility.HtmlEncode(contact.Message).Replace("\n", "<br>");
+            var privacyLabel = contact.PrivacyNoticeAccepted ? "Confirmado" : "No confirmado";
 
             var email = new MimeMessage();
             email.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
@@ -230,7 +235,7 @@ public sealed class ContactEmailSender(IOptions<EmailSettings> options, ILogger<
 
             var bodyBuilder = new BodyBuilder
             {
-                TextBody = $"Nombre: {contact.Name}\nEmpresa: {contact.Company}\nCorreo: {contact.Email}\nNecesidad: {contact.Type}\n\nMensaje:\n{contact.Message}",
+                TextBody = $"Nombre: {contact.Name}\nEmpresa: {contact.Company}\nCorreo: {contact.Email}\nNecesidad: {contact.Type}\nAviso de privacidad: {privacyLabel}\n\nMensaje:\n{contact.Message}",
                 HtmlBody = $"""
                     <div style="font-family:Arial,sans-serif;color:#0b1f33;line-height:1.55">
                       <h2 style="margin:0 0 18px">Nuevo contacto desde arvecta.mx</h2>
@@ -239,6 +244,7 @@ public sealed class ContactEmailSender(IOptions<EmailSettings> options, ILogger<
                         <tr><td style="padding:8px 12px;background:#f4f7fa;font-weight:700">Empresa</td><td style="padding:8px 12px">{safeCompany}</td></tr>
                         <tr><td style="padding:8px 12px;background:#f4f7fa;font-weight:700">Correo</td><td style="padding:8px 12px">{safeEmail}</td></tr>
                         <tr><td style="padding:8px 12px;background:#f4f7fa;font-weight:700">Necesidad</td><td style="padding:8px 12px">{safeType}</td></tr>
+                        <tr><td style="padding:8px 12px;background:#f4f7fa;font-weight:700">Aviso de privacidad</td><td style="padding:8px 12px">{privacyLabel}</td></tr>
                       </table>
                       <h3 style="margin:24px 0 8px">Qué necesita resolver</h3>
                       <div style="padding:16px;background:#f4f7fa;border-left:3px solid #3568f0;max-width:648px">{safeMessage}</div>
