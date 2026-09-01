@@ -63,6 +63,20 @@
 .evidence-item h3{font-family:var(--display);font-size:22px;letter-spacing:-.03em;margin:12px 0 8px;color:var(--ink)}
 .evidence-item p{margin:0;color:var(--soft);font-size:14px}
 
+/* Legal footer and privacy controls */
+.footer-bottom{align-items:center;flex-wrap:wrap}
+.footer-legal{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.footer-legal a,.footer-legal button{color:#8296A8;font-size:12px;background:none;border:0;padding:0;cursor:pointer;font-family:inherit}
+.footer-legal a:hover,.footer-legal button:hover{color:#fff}
+.cookie-banner{position:fixed;z-index:300;left:18px;right:18px;bottom:18px;background:#fff;border:1px solid var(--line);box-shadow:0 22px 70px rgba(4,19,33,.24);border-radius:16px}
+.cookie-banner-inner{width:min(100%,1180px);margin:auto;padding:20px 22px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
+.cookie-copy strong{display:block;font-family:var(--display);font-size:17px;color:var(--ink);margin-bottom:5px}
+.cookie-copy p{margin:0;color:var(--soft);font-size:13px;line-height:1.55;max-width:760px}
+.cookie-copy a{color:var(--blue);font-weight:700;font-size:12px}
+.cookie-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.cookie-btn-secondary{background:#fff;border-color:var(--line);color:var(--ink);box-shadow:none}
+.cookie-btn-secondary:hover{background:var(--cloud)}
+
 /* Consistent primary conversion language */
 .btn-primary,.btn-light{white-space:nowrap}
 
@@ -74,6 +88,7 @@
   .evidence-grid{grid-template-columns:1fr}
   .evidence-item{border-right:0;border-bottom:1px solid var(--line)}
   .evidence-item:last-child{border-bottom:0}
+  .cookie-banner-inner{grid-template-columns:1fr;gap:14px}.cookie-actions{justify-content:flex-start}
 }
 @media(max-width:720px){
   :root{--section-tight:66px}
@@ -82,4 +97,5 @@
   .asset-link{border-top:1px solid var(--line);padding:18px 28px 18px 0}
   .company-system{padding:30px;min-height:360px}
   .system-layer{grid-template-columns:76px 1fr}
+  .cookie-banner{left:10px;right:10px;bottom:10px}.cookie-banner-inner{padding:17px}.cookie-actions{display:grid;grid-template-columns:1fr}.cookie-actions .btn{width:100%}.footer-legal{justify-content:flex-start;margin-top:9px}
 }
