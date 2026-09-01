@@ -55,16 +55,17 @@ PY
 log "Probando SSH a $REMOTE:$REMOTE_PORT"
 "${SSH[@]}" "$REMOTE" 'echo SSH_OK && hostname && id -un'
 
-log "Instalando configuración SMTP de producción sin imprimir secretos"
-base64 < "$TMP_ENV" | "${SSH[@]}" "$REMOTE" \
-  "base64 -d | sudo tee /etc/arvecta.env.tmp >/dev/null && sudo install -d -m 0700 /etc/arvecta && sudo install -m 0600 -o root -g root /etc/arvecta.env.tmp /etc/arvecta/arvecta.env && sudo rm -f /etc/arvecta.env.tmp"
+log "Transfiriendo configuración SMTP sin imprimir secretos"
+base64 < "$TMP_ENV" | "${SSH[@]}" "$REMOTE" "umask 077; base64 -d > /tmp/arvecta.env"
+"${SSH[@]}" -t "$REMOTE" \
+  "sudo install -d -m 0700 /etc/arvecta && sudo install -m 0600 -o root -g root /tmp/arvecta.env /etc/arvecta/arvecta.env && rm -f /tmp/arvecta.env"
 
 log "Ejecutando bootstrap/deploy en servidor"
 "${SSH[@]}" -t "$REMOTE" \
   "curl -fsSL https://raw.githubusercontent.com/jiestrada/arvecta/main/deploy/deploy-production.sh | sudo bash"
 
 log "Validación remota"
-"${SSH[@]}" "$REMOTE" \
+"${SSH[@]}" -t "$REMOTE" \
   "sudo systemctl is-active arvecta.service && curl -fsS http://127.0.0.1:5088/health/live && echo && curl -fsS http://127.0.0.1:5088/health/ready && echo && curl -fsS -H 'Host: arvecta.mx' http://127.0.0.1/health/live && echo"
 
 log "DEPLOYMENT COMPLETADO"
