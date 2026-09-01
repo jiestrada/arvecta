@@ -12,8 +12,10 @@ SERVICE_FILE="/etc/systemd/system/arvecta.service"
 NGINX_AVAILABLE="/etc/nginx/sites-available/arvecta"
 NGINX_ENABLED="/etc/nginx/sites-enabled/arvecta"
 APP_PORT="5088"
-DOTNET_ROOT="/opt/dotnet10"
-DOTNET_BIN="$DOTNET_ROOT/dotnet"
+RUNTIME_ROOT="/opt/dotnet10"
+RUNTIME_BIN="$RUNTIME_ROOT/dotnet"
+SDK_ROOT="$APP_ROOT/.dotnet-sdk"
+SDK_BIN="$SDK_ROOT/dotnet"
 TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 RELEASE_DIR="$RELEASES_DIR/$TIMESTAMP"
 
@@ -26,20 +28,43 @@ for cmd in git nginx curl systemctl ss; do
   command -v "$cmd" >/dev/null 2>&1 || fail "Falta el comando requerido: $cmd"
 done
 
-[[ -x "$DOTNET_BIN" ]] || fail "No encuentro el ejecutable de .NET 10 en $DOTNET_BIN"
-DOTNET_VERSION="$($DOTNET_BIN --version)"
-[[ "$DOTNET_VERSION" == 10.* ]] || fail "ARVECTA requiere .NET SDK 10.x en $DOTNET_BIN; detectado: $DOTNET_VERSION"
-export DOTNET_ROOT
-export PATH="$DOTNET_ROOT:$PATH"
-log "Usando .NET SDK $DOTNET_VERSION desde $DOTNET_BIN"
+[[ -x "$RUNTIME_BIN" ]] || fail "No encuentro el runtime .NET 10 en $RUNTIME_BIN"
+RUNTIMES="$($RUNTIME_BIN --list-runtimes 2>/dev/null || true)"
+printf '%s\n' "$RUNTIMES" | grep -Eq '^Microsoft\.NETCore\.App 10\.' || fail "No encuentro Microsoft.NETCore.App 10.x en $RUNTIME_ROOT"
+printf '%s\n' "$RUNTIMES" | grep -Eq '^Microsoft\.AspNetCore\.App 10\.' || fail "No encuentro Microsoft.AspNetCore.App 10.x en $RUNTIME_ROOT"
+RUNTIME_VERSION="$(printf '%s\n' "$RUNTIMES" | awk '/^Microsoft.AspNetCore.App 10\./ {print $2; exit}')"
+log "Runtime ASP.NET Core $RUNTIME_VERSION detectado en $RUNTIME_ROOT"
+
+install -d -m 0755 "$APP_ROOT" "$SOURCE_DIR" "$RELEASES_DIR" /var/log/arvecta
+install -d -m 0700 "$ENV_DIR"
+
+SDK_VERSION=""
+if [[ -x "$SDK_BIN" ]]; then
+  SDK_VERSION="$($SDK_BIN --version 2>/dev/null || true)"
+fi
+if [[ "$SDK_VERSION" != 10.* ]]; then
+  log "Instalando SDK .NET 10 aislado para publicación en $SDK_ROOT"
+  rm -rf "$SDK_ROOT"
+  install -d -m 0755 "$SDK_ROOT"
+  INSTALL_SCRIPT="$(mktemp)"
+  trap 'rm -f "$INSTALL_SCRIPT"' EXIT
+  curl -fsSL https://dot.net/v1/dotnet-install.sh -o "$INSTALL_SCRIPT"
+  bash "$INSTALL_SCRIPT" --channel 10.0 --install-dir "$SDK_ROOT" --no-path
+  rm -f "$INSTALL_SCRIPT"
+  trap - EXIT
+  SDK_VERSION="$($SDK_BIN --version)"
+fi
+[[ "$SDK_VERSION" == 10.* ]] || fail "No fue posible disponer de un SDK .NET 10.x para publicar ARVECTA."
+log "SDK .NET $SDK_VERSION listo en $SDK_BIN"
+
+export DOTNET_ROOT="$SDK_ROOT"
+export PATH="$SDK_ROOT:$PATH"
 
 if ss -ltnp | grep -q ":${APP_PORT} " && ! systemctl is-active --quiet arvecta.service 2>/dev/null; then
   fail "El puerto ${APP_PORT} ya está ocupado por otro proceso. No se modificó nada."
 fi
 
 log "Preparando directorios"
-install -d -m 0755 "$APP_ROOT" "$SOURCE_DIR" "$RELEASES_DIR" /var/log/arvecta
-install -d -m 0700 "$ENV_DIR"
 
 if [[ ! -d "$SOURCE_DIR/.git" ]]; then
   rm -rf "$SOURCE_DIR"
@@ -80,9 +105,9 @@ else
   log "Conservando configuración existente en $ENV_FILE"
 fi
 
-log "Publicando release $TIMESTAMP con .NET 10"
+log "Publicando release $TIMESTAMP con SDK .NET $SDK_VERSION"
 install -d -m 0755 "$RELEASE_DIR"
-"$DOTNET_BIN" publish "$SOURCE_DIR/Arvecta.Web.csproj" \
+"$SDK_BIN" publish "$SOURCE_DIR/Arvecta.Web.csproj" \
   --configuration Release \
   --output "$RELEASE_DIR" \
   --nologo
@@ -140,8 +165,10 @@ done
 
 log "DEPLOYMENT SUCCESS"
 echo "DEPLOY_SHA=$DEPLOY_SHA"
-echo "DOTNET_VERSION=$DOTNET_VERSION"
-echo "DOTNET_BIN=$DOTNET_BIN"
+echo "RUNTIME_VERSION=$RUNTIME_VERSION"
+echo "RUNTIME_BIN=$RUNTIME_BIN"
+echo "SDK_VERSION=$SDK_VERSION"
+echo "SDK_BIN=$SDK_BIN"
 echo "APP=http://127.0.0.1:${APP_PORT}"
 echo "NGINX_HOST=arvecta.mx"
 echo "ENV_FILE=$ENV_FILE"
