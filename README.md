@@ -4,7 +4,7 @@ Sitio corporativo y sistema de marca de **ARVECTA TECHNOLOGIES, S.A.S.**
 
 > **Construir. Integrar. Evolucionar.**
 
-ARVECTA diseña software, integra sistemas y estructura datos para organizaciones que necesitan más control, trazabilidad y capacidad de escalar.
+ARVECTA diseña software, integra sistemas y estructura datos para organizaciones que necesitan más control, trazabilidad y capacidad de ejecución.
 
 ## Ver localmente
 
@@ -24,56 +24,70 @@ git pull origin main
 python3 -m http.server 8080
 ```
 
-## Sitio corporativo v2
+## Sitio corporativo v3
 
-La segunda dirección visual elimina el patrón genérico de landing SaaS y adopta una identidad más cercana a **ingeniería de sistemas y arquitectura tecnológica**:
+La tercera dirección mantiene el lenguaje de ingeniería de sistemas, pero corrige los puntos que todavía hacían ver la web como una landing de consultoría:
 
-- hero oscuro y técnico;
-- narrativa orientada a problemas operativos;
-- menos cards repetidas;
+- copy centrado en el comprador, no en discusiones internas de ARVECTA;
+- Sora para titulares, Inter para lectura e IBM Plex Mono para lenguaje técnico;
+- navegación hacia páginas corporativas reales;
+- hero técnico y mapa de sistemas propio;
 - tres capacidades principales;
-- sistema visual basado en retículas, vectores y mapas de sistemas;
-- metodología comercial Discovery → Build → Operate;
-- credibilidad basada en ejecución, no en claims inventados.
+- metodología formal: Diagnóstico y arquitectura → Implementación controlada → Operación y evolución;
+- disciplina de ejecución como argumento de confianza;
+- sectorización sin encerrar la marca;
+- activos propios presentados de forma compacta;
+- footer institucional y página de contacto estructurada;
+- accesibilidad básica y responsive.
 
-Archivos principales:
+## Arquitectura
 
-- `index.html` — sitio corporativo.
-- `assets/css/site-v2.css` — sistema visual web.
-- `assets/js/site-v2.js` — menú y animaciones.
-- `brand/arvecta-system-field.svg` — visual técnico propio de ARVECTA.
-- `brand/BRAND-GUIDELINES.md` — manual de identidad actualizado.
+```text
+/
+├── index.html
+├── servicios.html
+├── sectores.html
+├── empresa.html
+├── contacto.html
+├── 404.html
+├── assets/
+│   ├── css/site-v3.css
+│   ├── css/contact-page.css
+│   └── js/site-v3.js
+└── brand/
+    ├── arvecta-logo.png
+    ├── arvecta-logo-white.png
+    ├── arvecta-symbol.png
+    ├── arvecta-symbol-white.png
+    ├── arvecta-system-field-v2.svg
+    └── BRAND-GUIDELINES.md
+```
 
-## Logotipo
+## Branding
 
-La web intenta cargar primero los masters PNG aprobados:
+Masters PNG aprobados:
 
 - `brand/arvecta-logo.png`
 - `brand/arvecta-logo-white.png`
+- `brand/arvecta-symbol.png`
+- `brand/arvecta-symbol-white.png`
 
-Si todavía no existen en el repositorio, el HTML usa los SVG históricos como fallback temporal. Los SVG anteriores **no deben considerarse el master definitivo** si no reproducen fielmente el logo aprobado.
-
-## Brand system
-
-- `brand/arvecta-symbol.svg` — isotipo actual para favicon/UI.
-- `brand/arvecta-brand-board.svg` — lámina visual inicial.
-- `brand/tokens.css` y `brand/tokens.json` — design tokens.
-- `brand/BRAND-GUIDELINES.md` — reglas de marca y web.
+Los SVG históricos permanecen como referencia, pero no deben considerarse masters definitivos si no reproducen fielmente el arte aprobado.
 
 ## Dominio
 
 - Web: `https://arvecta.mx`
 - Correo: `contacto@arvecta.mx`
 
-## Enfoque comercial
+## Principio comercial
 
 La web responde en este orden:
 
-1. qué fricción operativa resuelve ARVECTA;
-2. qué capacidades utiliza;
-3. cómo reduce riesgo de ejecución;
-4. cómo iniciar con un alcance controlado;
-5. cómo convertir la conversación en proyecto.
+1. qué fricción operativa existe;
+2. qué resultado debe conseguirse;
+3. qué capacidad aplica ARVECTA;
+4. cómo se reduce riesgo de ejecución;
+5. cuál es el siguiente paso.
 
 ## Derechos
 
