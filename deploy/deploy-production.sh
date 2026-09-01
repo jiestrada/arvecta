@@ -121,12 +121,16 @@ REQUIRED_PUBLISH_FILES=(
   "empresa.html"
   "servicios.html"
   "sectores.html"
+  "aviso-privacidad.html"
+  "terminos.html"
+  "cookies.html"
   "404.html"
   "robots.txt"
   "sitemap.xml"
   "site.webmanifest"
   "assets/css/site-v3.css"
   "assets/css/site-v4.css"
+  "assets/css/legal.css"
   "assets/js/site-v3.js"
   "brand/arvecta-logo.png"
   "brand/arvecta-logo-white.png"
@@ -134,7 +138,10 @@ REQUIRED_PUBLISH_FILES=(
 for required in "${REQUIRED_PUBLISH_FILES[@]}"; do
   [[ -f "$RELEASE_DIR/$required" ]] || fail "El publish está incompleto: falta $required"
 done
+grep -q 'privacyNoticeAccepted' "$RELEASE_DIR/contacto.html" || fail "El formulario publicado no contiene confirmación de Aviso de Privacidad."
+grep -q 'arvecta_cookie_consent' "$RELEASE_DIR/assets/js/site-v3.js" || fail "El publish no contiene gestión de consentimiento de analítica."
 echo "[publish] STATIC_ASSETS=OK"
+echo "[publish] LEGAL_PRIVACY=OK"
 
 chown -R root:root "$RELEASE_DIR"
 find "$RELEASE_DIR" -type d -exec chmod 0755 {} +
@@ -182,19 +189,24 @@ curl -fsS "http://127.0.0.1:${APP_PORT}/health/ready" | sed 's/^/[health-ready] 
 printf '\n'
 
 HOME_TMP="$(mktemp)"
-trap 'rm -f "$HOME_TMP"' EXIT
+LEGAL_TMP="$(mktemp)"
+trap 'rm -f "$HOME_TMP" "$LEGAL_TMP"' EXIT
 if [[ "$TLS_ENABLED" -eq 1 ]]; then
   curl --noproxy '*' -kfsS --resolve arvecta.mx:443:127.0.0.1 "https://arvecta.mx/health/live" | sed 's/^/[nginx-https] /'
   printf '\n'
   curl --noproxy '*' -kfsS --resolve arvecta.mx:443:127.0.0.1 "https://arvecta.mx/" -o "$HOME_TMP"
+  curl --noproxy '*' -kfsS --resolve arvecta.mx:443:127.0.0.1 "https://arvecta.mx/aviso-privacidad.html" -o "$LEGAL_TMP"
 else
   curl -fsS -H 'Host: arvecta.mx' "http://127.0.0.1/health/live" | sed 's/^/[nginx-http] /'
   printf '\n'
   curl -fsS -H 'Host: arvecta.mx' "http://127.0.0.1/" -o "$HOME_TMP"
+  curl -fsS -H 'Host: arvecta.mx' "http://127.0.0.1/aviso-privacidad.html" -o "$LEGAL_TMP"
 fi
 grep -qi 'ARVECTA' "$HOME_TMP" || fail "La Home respondió pero no contiene la marca ARVECTA."
+grep -qi 'Aviso de Privacidad' "$LEGAL_TMP" || fail "El Aviso de Privacidad no respondió con contenido esperado."
 echo "[home] HTTP_200_CONTENT=OK"
-rm -f "$HOME_TMP"
+echo "[legal] PRIVACY_HTTP_200_CONTENT=OK"
+rm -f "$HOME_TMP" "$LEGAL_TMP"
 trap - EXIT
 
 log "Estado de servicios"
@@ -218,4 +230,4 @@ echo "APP=http://127.0.0.1:${APP_PORT}"
 echo "NGINX_HOST=arvecta.mx"
 echo "TLS_ENABLED=$TLS_ENABLED"
 echo "ENV_FILE=$ENV_FILE"
-echo "NEXT=Cloudflare Full (strict) + validación pública de Home, Contacto y formulario."
+echo "NEXT=Validar públicamente Home, legal y formulario con consentimiento."
