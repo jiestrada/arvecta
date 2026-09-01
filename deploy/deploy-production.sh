@@ -12,6 +12,8 @@ SERVICE_FILE="/etc/systemd/system/arvecta.service"
 NGINX_AVAILABLE="/etc/nginx/sites-available/arvecta"
 NGINX_ENABLED="/etc/nginx/sites-enabled/arvecta"
 APP_PORT="5088"
+DOTNET_ROOT="/opt/dotnet10"
+DOTNET_BIN="$DOTNET_ROOT/dotnet"
 TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 RELEASE_DIR="$RELEASES_DIR/$TIMESTAMP"
 
@@ -20,11 +22,16 @@ fail() { printf '\n[ARVECTA][ERROR] %s\n' "$*" >&2; exit 1; }
 
 [[ "${EUID}" -eq 0 ]] || fail "Ejecuta este script con sudo."
 
-for cmd in git dotnet nginx curl systemctl ss; do
+for cmd in git nginx curl systemctl ss; do
   command -v "$cmd" >/dev/null 2>&1 || fail "Falta el comando requerido: $cmd"
 done
 
-dotnet --version | grep -Eq '^8\.' || fail "Se requiere .NET SDK 8.x para publicar ARVECTA."
+[[ -x "$DOTNET_BIN" ]] || fail "No encuentro el ejecutable de .NET 10 en $DOTNET_BIN"
+DOTNET_VERSION="$($DOTNET_BIN --version)"
+[[ "$DOTNET_VERSION" == 10.* ]] || fail "ARVECTA requiere .NET SDK 10.x en $DOTNET_BIN; detectado: $DOTNET_VERSION"
+export DOTNET_ROOT
+export PATH="$DOTNET_ROOT:$PATH"
+log "Usando .NET SDK $DOTNET_VERSION desde $DOTNET_BIN"
 
 if ss -ltnp | grep -q ":${APP_PORT} " && ! systemctl is-active --quiet arvecta.service 2>/dev/null; then
   fail "El puerto ${APP_PORT} ya está ocupado por otro proceso. No se modificó nada."
@@ -73,9 +80,9 @@ else
   log "Conservando configuración existente en $ENV_FILE"
 fi
 
-log "Publicando release $TIMESTAMP"
+log "Publicando release $TIMESTAMP con .NET 10"
 install -d -m 0755 "$RELEASE_DIR"
-dotnet publish "$SOURCE_DIR/Arvecta.Web.csproj" \
+"$DOTNET_BIN" publish "$SOURCE_DIR/Arvecta.Web.csproj" \
   --configuration Release \
   --output "$RELEASE_DIR" \
   --nologo
@@ -133,6 +140,8 @@ done
 
 log "DEPLOYMENT SUCCESS"
 echo "DEPLOY_SHA=$DEPLOY_SHA"
+echo "DOTNET_VERSION=$DOTNET_VERSION"
+echo "DOTNET_BIN=$DOTNET_BIN"
 echo "APP=http://127.0.0.1:${APP_PORT}"
 echo "NGINX_HOST=arvecta.mx"
 echo "ENV_FILE=$ENV_FILE"
