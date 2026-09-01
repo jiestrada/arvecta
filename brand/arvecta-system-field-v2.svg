@@ -1,0 +1,27 @@
+<svg width="820" height="590" viewBox="0 0 820 590" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="flow" x1="78" y1="420" x2="742" y2="165" gradientUnits="userSpaceOnUse"><stop stop-color="#3568F0"/><stop offset="1" stop-color="#59DAD4"/></linearGradient>
+  <linearGradient id="mark" x1="300" y1="120" x2="600" y2="460" gradientUnits="userSpaceOnUse"><stop stop-color="#3568F0" stop-opacity=".20"/><stop offset="1" stop-color="#17A6A1" stop-opacity=".08"/></linearGradient>
+</defs>
+<g opacity=".16" stroke="#90A9BE" stroke-width="1">
+  <path d="M40 90H780M40 150H780M40 210H780M40 270H780M40 330H780M40 390H780M40 450H780M40 510H780"/>
+  <path d="M80 45V545M150 45V545M220 45V545M290 45V545M360 45V545M430 45V545M500 45V545M570 45V545M640 45V545M710 45V545"/>
+</g>
+<path d="M260 355L385 130L520 350L590 235L690 405" stroke="url(#mark)" stroke-width="54" stroke-linecap="square" stroke-linejoin="miter" opacity=".52"/>
+<path d="M92 433H180L240 360H330L385 292H472L530 225H630L690 166H748" stroke="url(#flow)" stroke-width="2"/>
+<path d="M180 433V488M330 360V414M472 292V348M630 225V282" stroke="#59DAD4" stroke-opacity=".55"/>
+
+<g font-family="IBM Plex Mono, monospace">
+  <g transform="translate(62 404)"><rect width="104" height="58" rx="4" fill="#0E2A44" stroke="#3568F0"/><text x="13" y="23" fill="white" font-size="12" font-weight="600">SOURCE</text><text x="13" y="41" fill="#91A9BE" font-size="9">OPERACIÓN</text></g>
+  <g transform="translate(188 330)"><rect width="112" height="58" rx="4" fill="#0E2A44" stroke="#3568F0"/><text x="13" y="23" fill="white" font-size="12" font-weight="600">CONNECT</text><text x="13" y="41" fill="#91A9BE" font-size="9">API / FLOW</text></g>
+  <g transform="translate(322 262)"><rect width="110" height="58" rx="4" fill="#0E2A44" stroke="#4A83FF"/><text x="13" y="23" fill="white" font-size="12" font-weight="600">PROCESS</text><text x="13" y="41" fill="#91A9BE" font-size="9">RULES</text></g>
+  <g transform="translate(458 195)"><rect width="110" height="58" rx="4" fill="#0E2A44" stroke="#59DAD4"/><text x="13" y="23" fill="white" font-size="12" font-weight="600">CONTROL</text><text x="13" y="41" fill="#91A9BE" font-size="9">TRACE</text></g>
+  <g transform="translate(594 137)"><rect width="106" height="58" rx="4" fill="#0E2A44" stroke="#59DAD4"/><text x="13" y="23" fill="white" font-size="12" font-weight="600">OBSERVE</text><text x="13" y="41" fill="#91A9BE" font-size="9">METRICS</text></g>
+  <g transform="translate(704 118)"><rect width="92" height="58" rx="4" fill="#102A43" stroke="#87A8FF"/><text x="12" y="23" fill="white" font-size="12" font-weight="600">OUTPUT</text><text x="12" y="41" fill="#91A9BE" font-size="9">DECIDE</text></g>
+
+  <text x="63" y="78" fill="#8DAEFF" font-size="11" letter-spacing="2">ARVECTA / SYSTEMS FIELD</text>
+  <text x="63" y="99" fill="#657F95" font-size="9" letter-spacing="1.5">BUILD · INTEGRATE · OBSERVE · OPERATE</text>
+  <text x="63" y="542" fill="#657F95" font-size="9" letter-spacing="1.2">OPERACIÓN → CONEXIÓN → PROCESO → CONTROL → DECISIÓN</text>
+</g>
+<g fill="#59DAD4"><circle cx="180" cy="433" r="4"/><circle cx="330" cy="360" r="4"/><circle cx="472" cy="292" r="4"/><circle cx="630" cy="225" r="4"/><circle cx="690" cy="166" r="4"/></g>
+</svg>
