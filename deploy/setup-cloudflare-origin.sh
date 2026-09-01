@@ -36,7 +36,23 @@ nginx -t
 systemctl reload nginx
 
 log "Validando HTTPS directamente contra el origin"
-curl --noproxy '*' -kfsS --resolve arvecta.mx:443:127.0.0.1 https://arvecta.mx/health/live | sed 's/^/[origin-https] /'
+TMP_BODY="$(mktemp)"
+TMP_HEADERS="$(mktemp)"
+trap 'rm -f "$TMP_BODY" "$TMP_HEADERS"' EXIT
+HTTP_CODE="$(curl --noproxy '*' -ksS --resolve arvecta.mx:443:127.0.0.1 -D "$TMP_HEADERS" -o "$TMP_BODY" -w '%{http_code}' https://arvecta.mx/health/live || true)"
+if [[ "$HTTP_CODE" != "200" ]]; then
+  echo "[origin-https] HTTP_STATUS=$HTTP_CODE"
+  sed 's/^/[origin-header] /' "$TMP_HEADERS" || true
+  sed 's/^/[origin-body] /' "$TMP_BODY" || true
+  echo "[nginx-server-names]"
+  nginx -T 2>/dev/null | grep -nE 'listen 443|server_name .*arvecta' | tail -n 30 || true
+  echo "[arvecta-access-log]"
+  tail -n 20 /var/log/nginx/arvecta.access.log 2>/dev/null || true
+  echo "[arvecta-error-log]"
+  tail -n 20 /var/log/nginx/arvecta.error.log 2>/dev/null || true
+  fail "La validación HTTPS directa del origin devolvió HTTP $HTTP_CODE en /health/live."
+fi
+sed 's/^/[origin-https] /' "$TMP_BODY"
 printf '\n'
 curl --noproxy '*' -kfsSI --resolve www.arvecta.mx:443:127.0.0.1 https://www.arvecta.mx/ | sed -n '1,6p' | sed 's/^/[www-origin] /'
 
