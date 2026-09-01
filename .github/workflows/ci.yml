@@ -40,12 +40,16 @@ jobs:
             empresa.html
             servicios.html
             sectores.html
+            aviso-privacidad.html
+            terminos.html
+            cookies.html
             404.html
             robots.txt
             sitemap.xml
             site.webmanifest
             assets/css/site-v3.css
             assets/css/site-v4.css
+            assets/css/legal.css
             assets/js/site-v3.js
             brand/arvecta-logo.png
             brand/arvecta-logo-white.png
@@ -53,4 +57,10 @@ jobs:
           for file in "${required[@]}"; do
             test -f "publish/$file" || { echo "Missing publish/$file"; exit 1; }
           done
+          grep -q 'privacyNoticeAccepted' publish/contacto.html
+          grep -q 'Aviso de Privacidad Integral' publish/aviso-privacidad.html
+          grep -q 'Términos de Uso' publish/terminos.html
+          grep -q 'G-DVKX7DGK9T' publish/cookies.html
+          grep -q 'arvecta_cookie_consent' publish/assets/js/site-v3.js
           echo "STATIC_PUBLISH=OK"
+          echo "LEGAL_PRIVACY=OK"
