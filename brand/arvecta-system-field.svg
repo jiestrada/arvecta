@@ -1,0 +1,61 @@
+<svg width="1200" height="980" viewBox="0 0 1200 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="110" y1="95" x2="1010" y2="850" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3568F0"/>
+      <stop offset="1" stop-color="#17A6A1"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="280" y1="180" x2="970" y2="745" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#92B2FF" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#4FE0DA" stop-opacity=".9"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="9" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g opacity=".15" stroke="#BBD0E4">
+    <path d="M80 120H1120M80 220H1120M80 320H1120M80 420H1120M80 520H1120M80 620H1120M80 720H1120M80 820H1120"/>
+    <path d="M160 70V900M300 70V900M440 70V900M580 70V900M720 70V900M860 70V900M1000 70V900"/>
+  </g>
+  <g opacity=".22" stroke="url(#g1)" stroke-width="2">
+    <path d="M110 760L320 560L495 650L680 360L930 480L1080 230"/>
+    <path d="M150 270L350 360L540 250L735 455L950 370"/>
+  </g>
+  <g stroke="url(#g2)" stroke-width="3" opacity=".9">
+    <path d="M165 640H360V505H570V610H805V430H1020"/>
+    <path d="M210 350H420V455H615V300H820V355H1040"/>
+  </g>
+  <g fill="#0B1F33" stroke="#6E93FF" stroke-width="2">
+    <rect x="125" y="602" width="120" height="74" rx="8"/>
+    <rect x="322" y="468" width="126" height="74" rx="8"/>
+    <rect x="526" y="574" width="126" height="74" rx="8"/>
+    <rect x="763" y="394" width="128" height="74" rx="8"/>
+    <rect x="965" y="194" width="128" height="74" rx="8"/>
+    <rect x="170" y="314" width="126" height="74" rx="8"/>
+    <rect x="380" y="419" width="126" height="74" rx="8"/>
+    <rect x="573" y="264" width="126" height="74" rx="8"/>
+    <rect x="780" y="319" width="126" height="74" rx="8"/>
+    <rect x="992" y="334" width="126" height="74" rx="8"/>
+  </g>
+  <g fill="#D9E6F2" font-family="IBM Plex Mono, monospace" font-size="17" font-weight="500">
+    <text x="151" y="635">SOURCE</text><text x="151" y="657" fill="#7892AB" font-size="12">OPERATIONS</text>
+    <text x="345" y="502">CONNECT</text><text x="345" y="524" fill="#7892AB" font-size="12">API / FLOW</text>
+    <text x="549" y="608">PROCESS</text><text x="549" y="630" fill="#7892AB" font-size="12">RULES</text>
+    <text x="785" y="428">CONTROL</text><text x="785" y="450" fill="#7892AB" font-size="12">TRACE</text>
+    <text x="988" y="228">OUTPUT</text><text x="988" y="250" fill="#7892AB" font-size="12">DECISION</text>
+    <text x="193" y="348">DATA</text><text x="193" y="370" fill="#7892AB" font-size="12">INGEST</text>
+    <text x="402" y="453">MODEL</text><text x="402" y="475" fill="#7892AB" font-size="12">DOMAIN</text>
+    <text x="596" y="298">ENGINE</text><text x="596" y="320" fill="#7892AB" font-size="12">SERVICES</text>
+    <text x="802" y="353">OBSERVE</text><text x="802" y="375" fill="#7892AB" font-size="12">METRICS</text>
+    <text x="1014" y="368">SCALE</text><text x="1014" y="390" fill="#7892AB" font-size="12">OPERATE</text>
+  </g>
+  <g fill="url(#g1)" filter="url(#glow)">
+    <circle cx="360" cy="505" r="7"/><circle cx="570" cy="610" r="7"/><circle cx="805" cy="430" r="7"/>
+    <circle cx="420" cy="455" r="7"/><circle cx="615" cy="300" r="7"/><circle cx="820" cy="355" r="7"/>
+  </g>
+  <g opacity=".12" fill="url(#g1)">
+    <path d="M360 95L650 390L545 495L360 305L170 498L65 392L360 95Z"/>
+    <path d="M690 450L835 595L1060 370L1140 450L835 755L610 530L690 450Z"/>
+  </g>
+  <text x="90" y="925" fill="#7892AB" font-family="IBM Plex Mono, monospace" font-size="13" letter-spacing="2">ARVECTA / SYSTEMS FIELD / BUILD · INTEGRATE · OPERATE</text>
+</svg>
