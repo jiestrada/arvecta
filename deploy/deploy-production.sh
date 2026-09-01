@@ -11,6 +11,8 @@ ENV_FILE="$ENV_DIR/arvecta.env"
 SERVICE_FILE="/etc/systemd/system/arvecta.service"
 NGINX_AVAILABLE="/etc/nginx/sites-available/arvecta"
 NGINX_ENABLED="/etc/nginx/sites-enabled/arvecta"
+CERT_FILE="/etc/letsencrypt/live/arvecta.mx/fullchain.pem"
+CERT_KEY="/etc/letsencrypt/live/arvecta.mx/privkey.pem"
 APP_PORT="5088"
 RUNTIME_ROOT="/opt/dotnet10"
 RUNTIME_BIN="$RUNTIME_ROOT/dotnet"
@@ -121,7 +123,14 @@ install -m 0644 "$SOURCE_DIR/deploy/systemd/arvecta.service" "$SERVICE_FILE"
 systemctl daemon-reload
 
 log "Instalando reverse proxy Nginx"
-install -m 0644 "$SOURCE_DIR/deploy/nginx/arvecta.conf" "$NGINX_AVAILABLE"
+if [[ -f "$CERT_FILE" && -f "$CERT_KEY" ]]; then
+  log "Certificado TLS detectado; conservando HTTPS en deploy"
+  install -m 0644 "$SOURCE_DIR/deploy/nginx/arvecta-tls.conf" "$NGINX_AVAILABLE"
+  TLS_ENABLED=1
+else
+  install -m 0644 "$SOURCE_DIR/deploy/nginx/arvecta.conf" "$NGINX_AVAILABLE"
+  TLS_ENABLED=0
+fi
 ln -sfn "$NGINX_AVAILABLE" "$NGINX_ENABLED"
 nginx -t
 
@@ -149,7 +158,11 @@ curl -fsS "http://127.0.0.1:${APP_PORT}/health/live" | sed 's/^/[health-live] /'
 printf '\n'
 curl -fsS "http://127.0.0.1:${APP_PORT}/health/ready" | sed 's/^/[health-ready] /'
 printf '\n'
-curl -fsS -H 'Host: arvecta.mx' "http://127.0.0.1/health/live" | sed 's/^/[nginx] /'
+if [[ "$TLS_ENABLED" -eq 1 ]]; then
+  curl -fsS --resolve arvecta.mx:443:127.0.0.1 "https://arvecta.mx/health/live" | sed 's/^/[nginx-https] /'
+else
+  curl -fsS -H 'Host: arvecta.mx' "http://127.0.0.1/health/live" | sed 's/^/[nginx-http] /'
+fi
 printf '\n'
 
 log "Estado de servicios"
@@ -171,5 +184,6 @@ echo "SDK_VERSION=$SDK_VERSION"
 echo "SDK_BIN=$SDK_BIN"
 echo "APP=http://127.0.0.1:${APP_PORT}"
 echo "NGINX_HOST=arvecta.mx"
+echo "TLS_ENABLED=$TLS_ENABLED"
 echo "ENV_FILE=$ENV_FILE"
-echo "NEXT=Apunta DNS/Cloudflare a este servidor y configura TLS Full (strict)."
+echo "NEXT=Si TLS_ENABLED=0 ejecuta deploy/setup-tls-from-mac.sh; después usa Cloudflare Full (strict)."
