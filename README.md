@@ -6,44 +6,108 @@ Sitio corporativo y sistema de marca de **ARVECTA TECHNOLOGIES, S.A.S.**
 
 ARVECTA diseña software, integra sistemas y estructura datos para organizaciones que necesitan más control, trazabilidad y capacidad de ejecución.
 
-## Ver localmente
+## Stack
+
+- HTML/CSS/JavaScript para la experiencia web.
+- ASP.NET Core 8 como host y API mínima.
+- MailKit para envío SMTP del formulario de contacto.
+- Rate limiting por IP y honeypot básico contra spam.
+
+## Ejecutar localmente
+
+Para probar **todo el sitio, incluido el envío real del formulario**, usa .NET:
 
 ```bash
 git clone https://github.com/jiestrada/arvecta.git
 cd arvecta
-python3 -m http.server 8080
+dotnet restore
+dotnet run --urls http://localhost:8080
 ```
 
-Abre `http://localhost:8080`.
+Abre:
 
-Si ya tienes el repositorio local:
+```text
+http://localhost:8080
+```
+
+Si ya tienes el repositorio:
 
 ```bash
 cd ~/Devs/arvecta
 git pull origin main
-python3 -m http.server 8080
+dotnet restore
+dotnet run --urls http://localhost:8080
 ```
 
-## Sitio corporativo v3
+> `python3 -m http.server 8080` sigue sirviendo para revisar únicamente la parte visual, pero **no ejecuta `/api/contact`** y por tanto el formulario no enviará correos.
 
-La tercera dirección mantiene el lenguaje de ingeniería de sistemas, pero corrige los puntos que todavía hacían ver la web como una landing de consultoría:
+## Configurar correo
 
-- copy centrado en el comprador, no en discusiones internas de ARVECTA;
-- Sora para titulares, Inter para lectura e IBM Plex Mono para lenguaje técnico;
-- navegación hacia páginas corporativas reales;
-- hero técnico y mapa de sistemas propio;
-- tres capacidades principales;
-- metodología formal: Diagnóstico y arquitectura → Implementación controlada → Operación y evolución;
-- disciplina de ejecución como argumento de confianza;
-- sectorización sin encerrar la marca;
-- activos propios presentados de forma compacta;
-- footer institucional y página de contacto estructurada;
-- accesibilidad básica y responsive.
+El proyecto reutiliza temporalmente la infraestructura SMTP de AI Regula Solutions mediante la sección `EmailSettings`.
+
+`appsettings.json` contiene sólo parámetros no secretos y deja usuario/password vacíos. **No pongas credenciales reales en ese archivo.**
+
+Crea un archivo local a partir del ejemplo:
+
+```bash
+cp appsettings.Local.example.json appsettings.Local.json
+```
+
+Después edita `appsettings.Local.json`:
+
+```json
+{
+  "EmailSettings": {
+    "SmtpUser": "TU_USUARIO_SMTP",
+    "SmtpPassword": "TU_PASSWORD_SMTP"
+  }
+}
+```
+
+`appsettings.Local.json` está incluido en `.gitignore` y no debe subirse al repositorio.
+
+También puedes sobrescribir cualquier valor mediante variables de entorno, por ejemplo:
+
+```bash
+export EmailSettings__SmtpUser="usuario"
+export EmailSettings__SmtpPassword="password"
+```
+
+### Configuración actual no secreta
+
+- SMTP: infraestructura temporal de AI Regula Solutions.
+- Remitente temporal: `info@airegulasolutions.com`.
+- Destino: `contacto@arvecta.mx`.
+- `Reply-To`: se establece automáticamente al correo que captura el prospecto, para que puedas responderle directamente.
+
+## Formulario de contacto
+
+`POST /api/contact`
+
+El endpoint:
+
+- valida nombre, correo y mensaje;
+- limita solicitudes por IP;
+- incorpora un honeypot básico;
+- escapa contenido antes de construir el HTML del correo;
+- envía el mensaje a `contacto@arvecta.mx`;
+- devuelve confirmación JSON al frontend;
+- no almacena los datos en una base de datos.
+
+Health check:
+
+```text
+GET /health/live
+```
 
 ## Arquitectura
 
 ```text
 /
+├── Arvecta.Web.csproj
+├── Program.cs
+├── appsettings.json
+├── appsettings.Local.example.json
 ├── index.html
 ├── servicios.html
 ├── sectores.html
@@ -52,6 +116,7 @@ La tercera dirección mantiene el lenguaje de ingeniería de sistemas, pero corr
 ├── 404.html
 ├── assets/
 │   ├── css/site-v3.css
+│   ├── css/site-v4.css
 │   ├── css/contact-page.css
 │   └── js/site-v3.js
 └── brand/
@@ -71,8 +136,6 @@ Masters PNG aprobados:
 - `brand/arvecta-logo-white.png`
 - `brand/arvecta-symbol.png`
 - `brand/arvecta-symbol-white.png`
-
-Los SVG históricos permanecen como referencia, pero no deben considerarse masters definitivos si no reproducen fielmente el arte aprobado.
 
 ## Dominio
 
