@@ -31,7 +31,7 @@ log "Instalando Cloudflare Origin CA y Nginx HTTPS"
 
 log "Validación remota final"
 "${SSH[@]}" -t "$REMOTE" \
-  "sudo nginx -t && sudo systemctl is-active arvecta.service && curl -kfsS --resolve arvecta.mx:443:127.0.0.1 https://arvecta.mx/health/live && echo"
+  "sudo nginx -t && sudo systemctl is-active arvecta.service && curl --noproxy '*' -kfsS --resolve arvecta.mx:443:127.0.0.1 https://arvecta.mx/health/live && echo"
 
 log "CLOUDFLARE ORIGIN TLS COMPLETADO"
 echo "Ahora configura Cloudflare SSL/TLS > Overview > Full (strict) cuando Universal SSL esté Active."
