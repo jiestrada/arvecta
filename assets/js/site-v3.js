@@ -32,21 +32,60 @@ if('IntersectionObserver'in window&&!window.matchMedia('(prefers-reduced-motion:
   revealItems.forEach(item=>item.classList.add('in'));
 }
 
-const year=document.querySelectorAll('[data-year]');
-year.forEach(el=>el.textContent=new Date().getFullYear());
+document.querySelectorAll('[data-year]').forEach(el=>el.textContent=new Date().getFullYear());
 
 const form=document.querySelector('[data-contact-form]');
 if(form){
-  form.addEventListener('submit',event=>{
+  const submitButton=form.querySelector('button[type="submit"]');
+  const status=form.querySelector('[data-form-status]');
+  const originalButtonText=submitButton?.textContent||'Enviar mensaje';
+
+  const setStatus=(message,type='')=>{
+    if(!status)return;
+    status.textContent=message;
+    status.className=`form-status${type?` ${type}`:''}`;
+    status.hidden=!message;
+  };
+
+  form.addEventListener('submit',async event=>{
     event.preventDefault();
+    if(!form.reportValidity())return;
+
     const data=new FormData(form);
-    const name=data.get('name')||'';
-    const company=data.get('company')||'';
-    const email=data.get('email')||'';
-    const type=data.get('type')||'';
-    const message=data.get('message')||'';
-    const subject=encodeURIComponent(`Proyecto ARVECTA — ${company||name||'Nuevo contacto'}`);
-    const body=encodeURIComponent(`Nombre: ${name}\nEmpresa: ${company}\nCorreo: ${email}\nTipo de necesidad: ${type}\n\nQué necesitamos resolver:\n${message}`);
-    window.location.href=`mailto:contacto@arvecta.mx?subject=${subject}&body=${body}`;
+    const payload={
+      name:(data.get('name')||'').toString().trim(),
+      company:(data.get('company')||'').toString().trim(),
+      email:(data.get('email')||'').toString().trim(),
+      type:(data.get('type')||'').toString().trim(),
+      message:(data.get('message')||'').toString().trim(),
+      website:(data.get('website')||'').toString().trim()
+    };
+
+    submitButton.disabled=true;
+    submitButton.textContent='Enviando…';
+    setStatus('Enviando tu mensaje a ARVECTA…','pending');
+
+    try{
+      const response=await fetch('/api/contact',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      const result=await response.json().catch(()=>({}));
+
+      if(!response.ok||!result.ok){
+        throw new Error(result.error||'No pudimos enviar el mensaje en este momento.');
+      }
+
+      form.reset();
+      setStatus(result.message||'Mensaje enviado. Gracias por contactar a ARVECTA.','success');
+      submitButton.textContent='Mensaje enviado';
+      setTimeout(()=>{submitButton.textContent=originalButtonText;},3500);
+    }catch(error){
+      setStatus(`${error.message||'No pudimos enviar el mensaje.'} También puedes escribir directamente a contacto@arvecta.mx.`,'error');
+      submitButton.textContent=originalButtonText;
+    }finally{
+      submitButton.disabled=false;
+    }
   });
 }
