@@ -1,0 +1,117 @@
+/* ARVECTA site v5 — leadership, professional trajectory and commercial proof */
+
+/* Leadership */
+.leadership-section{background:#fff}
+.leadership-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.leader-card{display:grid;grid-template-columns:180px 1fr;gap:28px;min-height:430px;padding:28px;border:1px solid var(--line);background:linear-gradient(180deg,#fff 0%,#F7FAFC 100%);position:relative;overflow:hidden}
+.leader-card:before{content:'';position:absolute;right:-120px;top:-120px;width:270px;height:270px;border:1px solid rgba(53,104,240,.10);transform:rotate(35deg)}
+.leader-card>*{position:relative;z-index:1}
+.leader-photo{position:relative;min-height:100%;overflow:hidden;background:var(--navy-2)}
+.leader-photo:after{content:'';position:absolute;inset:55% 0 0;background:linear-gradient(180deg,transparent,rgba(7,20,33,.88));pointer-events:none}
+.leader-photo img{width:100%;height:100%;min-height:370px;object-fit:cover;object-position:center center}
+.leader-photo span{position:absolute;z-index:2;left:16px;right:16px;bottom:16px;font-family:var(--mono);font-size:9px;line-height:1.45;letter-spacing:.10em;color:#DCE8FF;text-transform:uppercase}
+.leader-body{align-self:center}
+.leader-body h3{margin:0;font-family:var(--display);font-size:clamp(26px,2.3vw,33px);line-height:1.08;letter-spacing:-.035em;color:var(--ink)}
+.leader-role{margin:8px 0 18px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:600}
+.leader-body p{margin:0;color:var(--soft);font-size:14px;line-height:1.7}
+.leader-focus{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.leader-focus span{border:1px solid var(--line);background:#fff;padding:8px 10px;font-size:10px;font-weight:750;color:var(--text)}
+.multidisciplinary{margin-top:22px;display:grid;grid-template-columns:42px 1fr;gap:16px;align-items:center;padding:22px 26px;background:var(--ink);color:#D8E4EE}
+.multidisciplinary img{width:34px;height:34px;object-fit:contain}
+.multidisciplinary strong{color:#fff}
+.multidisciplinary span{color:#63DED8;font-weight:750}
+
+/* Professional trajectory / project evidence */
+.experience-section{background:var(--cloud)}
+.experience-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line);background:#fff}
+.experience-card{min-height:300px;padding:30px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column}
+.experience-card small{font-family:var(--mono);font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:var(--blue)}
+.experience-card h3{font-family:var(--display);font-size:22px;line-height:1.12;letter-spacing:-.025em;color:var(--ink);margin:14px 0 5px}
+.experience-project{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--teal);font-weight:600;text-transform:uppercase;margin-bottom:18px}
+.experience-card p{margin:0;color:var(--soft);font-size:14px;line-height:1.65}
+.experience-card:after{content:'EXPERIENCIA / TRAYECTORIA';margin-top:auto;padding-top:22px;font-family:var(--mono);font-size:9px;letter-spacing:.09em;color:#8A9CAE}
+.experience-note{margin-top:24px;padding:20px 22px;border-left:3px solid var(--teal);background:#fff;color:var(--soft);font-size:13px;line-height:1.7}
+.experience-note strong{color:var(--ink)}
+
+/* Company page navigation within content */
+.company-anchor-nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+.company-anchor-nav a{display:inline-flex;align-items:center;min-height:42px;padding:0 14px;border:1px solid rgba(255,255,255,.20);color:#E6EEF5;font-size:12px;font-weight:750}
+.company-anchor-nav a:hover{background:rgba(255,255,255,.06)}
+
+/* Two commercial entry points: government and business */
+.market-doors{background:#071421;color:#fff;position:relative;overflow:hidden}
+.market-doors:after{content:'';position:absolute;right:-180px;top:-180px;width:560px;height:560px;border:1px solid rgba(89,218,212,.10);transform:rotate(35deg)}
+.market-doors .section-head{position:relative;z-index:1}
+.market-doors .section-head p{color:#B8C9D8}
+.door-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.door-card{min-height:430px;padding:38px;border:1px solid rgba(255,255,255,.13);display:flex;flex-direction:column;background:#102A43}
+.door-card--government{background:#F7FAFC;color:var(--ink);border-color:#D7E1EA}
+.door-card small{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#80A6FF}
+.door-card--government small{color:var(--blue)}
+.door-card h3{font-family:var(--display);font-size:clamp(30px,3vw,42px);line-height:1.05;letter-spacing:-.04em;margin:16px 0 9px}
+.door-card .door-sub{font-size:17px;font-weight:750;color:#67DDD7;margin-bottom:20px}
+.door-card--government .door-sub{color:var(--blue)}
+.door-card p{margin:0;color:#B9CAD8;line-height:1.7;max-width:560px}
+.door-card--government p{color:var(--soft)}
+.door-list{display:grid;margin-top:auto;padding-top:28px}
+.door-list span{padding:13px 0;border-top:1px solid rgba(255,255,255,.11);font-size:13px;font-weight:700}
+.door-card--government .door-list span{border-top-color:var(--line)}
+
+/* AI applied — kept operational rather than generic */
+.ai-applied{background:linear-gradient(145deg,#081827,#0B2136);color:#fff;position:relative;overflow:hidden}
+.ai-applied:after{content:'';position:absolute;right:-190px;bottom:-240px;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,rgba(53,104,240,.19),rgba(53,104,240,0) 68%)}
+.ai-applied .section-head{position:relative;z-index:1}
+.ai-applied .section-head p{color:#B7C9D8}
+.ai-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.13);border-left:1px solid rgba(255,255,255,.13)}
+.ai-card{min-height:340px;padding:32px;border-right:1px solid rgba(255,255,255,.13);border-bottom:1px solid rgba(255,255,255,.13);display:flex;flex-direction:column}
+.ai-card small{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:#7EA4FF;text-transform:uppercase}
+.ai-card h3{font-family:var(--display);font-size:25px;line-height:1.1;letter-spacing:-.03em;margin:16px 0 12px;color:#fff}
+.ai-card p{margin:0;color:#B8C9D7;font-size:14px;line-height:1.65}
+.ai-card ul{list-style:none;padding:0;margin:auto 0 0;display:grid;gap:0}
+.ai-card li{padding:10px 0;border-top:1px solid rgba(255,255,255,.09);font-size:12px;color:#E0E9F1}
+.ai-principle{position:relative;z-index:1;margin-top:22px;padding:22px 26px;border-left:3px solid var(--teal);background:rgba(255,255,255,.055);color:#D1DEE8;line-height:1.65}
+.ai-principle strong{color:#fff}
+
+/* Compact proof on home */
+.home-proof{background:var(--cloud)}
+.proof-shell{display:grid;grid-template-columns:.9fr 1.1fr;gap:54px;align-items:stretch}
+.proof-copy{padding:12px 0}
+.proof-copy p{color:var(--soft);font-size:16px;line-height:1.72;max-width:600px}
+.proof-leaders{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
+.proof-person{display:grid;grid-template-columns:74px 1fr;align-items:center;gap:14px;padding:12px;background:#fff;border:1px solid var(--line)}
+.proof-person img{width:74px;height:82px;object-fit:cover;object-position:center 30%}
+.proof-person strong{display:block;font-family:var(--display);font-size:14px;line-height:1.25;color:var(--ink)}
+.proof-person span{display:block;margin-top:4px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--teal)}
+.proof-track{background:var(--ink);padding:38px;color:#fff;display:flex;flex-direction:column;justify-content:center}
+.proof-track small{font-family:var(--mono);font-size:10px;letter-spacing:.11em;color:#86A8FF;text-transform:uppercase}
+.proof-track h3{font-family:var(--display);font-size:clamp(27px,2.8vw,38px);line-height:1.07;letter-spacing:-.035em;margin:14px 0 12px}
+.proof-track p{margin:0;color:#B9CAD8;font-size:14px;line-height:1.65}
+.proof-orgs{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.proof-orgs span{padding:8px 10px;border:1px solid rgba(255,255,255,.12);font-family:var(--mono);font-size:9px;letter-spacing:.05em;color:#DCE6EE}
+.proof-note{margin-top:18px;font-size:11px!important;color:#8FA5B7!important}
+
+@media(max-width:1100px){
+  .leader-card{grid-template-columns:155px 1fr;gap:22px;padding:24px}
+  .leader-photo img{min-height:360px}
+  .proof-shell{grid-template-columns:1fr;gap:28px}
+}
+@media(max-width:1000px){
+  .leadership-grid{grid-template-columns:1fr}
+  .leader-card{grid-template-columns:210px 1fr}
+  .experience-grid,.ai-grid{grid-template-columns:1fr 1fr}
+  .door-grid{grid-template-columns:1fr}
+  .door-card{min-height:360px}
+}
+@media(max-width:720px){
+  .leader-card{grid-template-columns:1fr;padding:20px;min-height:auto}
+  .leader-photo{min-height:0;aspect-ratio:16/9}
+  .leader-photo img{min-height:0;height:100%;object-position:center 34%}
+  .leader-photo span{left:14px;bottom:12px}
+  .experience-grid,.ai-grid{grid-template-columns:1fr}
+  .experience-card,.ai-card{min-height:auto}
+  .multidisciplinary{grid-template-columns:34px 1fr;padding:20px}
+  .door-card{padding:28px;min-height:auto}
+  .door-list{margin-top:25px}
+  .proof-leaders{grid-template-columns:1fr}
+  .proof-track{padding:28px}
+}
