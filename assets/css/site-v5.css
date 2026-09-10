@@ -1,0 +1,50 @@
+/* ARVECTA site v5 — leadership and professional trajectory */
+
+/* Leadership */
+.leadership-section{background:#fff}
+.leadership-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.leader-card{display:grid;grid-template-columns:118px 1fr;gap:26px;min-height:410px;padding:34px;border:1px solid var(--line);background:linear-gradient(180deg,#fff 0%,#F7FAFC 100%);position:relative;overflow:hidden}
+.leader-card:before{content:'';position:absolute;right:-120px;top:-120px;width:270px;height:270px;border:1px solid rgba(53,104,240,.10);transform:rotate(35deg)}
+.leader-card>*{position:relative;z-index:1}
+.leader-mark{min-height:100%;background:linear-gradient(160deg,var(--navy-2),var(--ink));display:flex;flex-direction:column;justify-content:space-between;padding:22px 18px;color:#fff}
+.leader-mark img{width:54px;height:54px;object-fit:contain}
+.leader-mark span{font-family:var(--mono);font-size:11px;letter-spacing:.10em;color:#8FB0FF;writing-mode:vertical-rl;transform:rotate(180deg);text-transform:uppercase}
+.leader-body h3{margin:0;font-family:var(--display);font-size:clamp(27px,2.5vw,34px);line-height:1.08;letter-spacing:-.035em;color:var(--ink)}
+.leader-role{margin:8px 0 18px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:600}
+.leader-body p{margin:0;color:var(--soft);font-size:15px;line-height:1.72}
+.leader-focus{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.leader-focus span{border:1px solid var(--line);background:#fff;padding:8px 10px;font-size:11px;font-weight:750;color:var(--text)}
+.multidisciplinary{margin-top:22px;display:grid;grid-template-columns:42px 1fr;gap:16px;align-items:center;padding:22px 26px;background:var(--ink);color:#D8E4EE}
+.multidisciplinary img{width:34px;height:34px;object-fit:contain}
+.multidisciplinary strong{color:#fff}
+.multidisciplinary span{color:#63DED8;font-weight:750}
+
+/* Professional trajectory / project evidence */
+.experience-section{background:var(--cloud)}
+.experience-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line);background:#fff}
+.experience-card{min-height:300px;padding:30px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column}
+.experience-card small{font-family:var(--mono);font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:var(--blue)}
+.experience-card h3{font-family:var(--display);font-size:22px;line-height:1.12;letter-spacing:-.025em;color:var(--ink);margin:14px 0 5px}
+.experience-project{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--teal);font-weight:600;text-transform:uppercase;margin-bottom:18px}
+.experience-card p{margin:0;color:var(--soft);font-size:14px;line-height:1.65}
+.experience-card:after{content:'PROYECTO / TRAYECTORIA';margin-top:auto;padding-top:22px;font-family:var(--mono);font-size:9px;letter-spacing:.09em;color:#8A9CAE}
+.experience-note{margin-top:24px;padding:20px 22px;border-left:3px solid var(--teal);background:#fff;color:var(--soft);font-size:13px;line-height:1.7}
+.experience-note strong{color:var(--ink)}
+
+/* Company page navigation within content */
+.company-anchor-nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+.company-anchor-nav a{display:inline-flex;align-items:center;min-height:42px;padding:0 14px;border:1px solid rgba(255,255,255,.20);color:#E6EEF5;font-size:12px;font-weight:750}
+.company-anchor-nav a:hover{background:rgba(255,255,255,.06)}
+
+@media(max-width:1000px){
+  .leadership-grid{grid-template-columns:1fr}
+  .experience-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:720px){
+  .leader-card{grid-template-columns:1fr;padding:24px;min-height:auto}
+  .leader-mark{min-height:84px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:18px}
+  .leader-mark span{writing-mode:horizontal-tb;transform:none}
+  .experience-grid{grid-template-columns:1fr}
+  .experience-card{min-height:auto}
+  .multidisciplinary{grid-template-columns:34px 1fr;padding:20px}
+}
