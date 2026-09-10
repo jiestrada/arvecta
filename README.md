@@ -1,157 +1,49 @@
 # ARVECTA Technologies
 
-Sitio corporativo y sistema de marca de **ARVECTA TECHNOLOGIES, S.A.S.**
+Sitio corporativo de **ARVECTA TECHNOLOGIES, S.A.S.**
 
-> **Construir. Integrar. Evolucionar.**
+## Posicionamiento
 
-ARVECTA diseña software, integra sistemas y estructura datos para organizaciones que necesitan más control, trazabilidad y capacidad de ejecución.
+ARVECTA diseña, desarrolla e integra soluciones digitales para organizaciones que necesitan transformar procesos manuales, fragmentados o difíciles de controlar. La propuesta comercial se articula alrededor de:
 
-## Stack
+- software y plataformas;
+- integración y automatización;
+- datos y operación digital;
+- inteligencia artificial aplicada;
+- gobierno digital;
+- operación empresarial.
 
-- HTML/CSS/JavaScript para la experiencia web.
-- ASP.NET Core 8 como host y API mínima.
-- MailKit para envío SMTP del formulario de contacto.
-- Rate limiting por IP y honeypot básico contra spam.
+La metodología comercial prioriza entender el problema operativo, definir alcance y arquitectura, construir con criterios de aceptación y diseñar para operación y evolución.
 
-## Ejecutar localmente
+## Sitio
 
-Para probar **todo el sitio, incluido el envío real del formulario**, usa .NET:
+Páginas principales:
 
-```bash
-git clone https://github.com/jiestrada/arvecta.git
-cd arvecta
-dotnet restore
-dotnet run --urls http://localhost:8080
-```
+- `index.html` — home y posicionamiento general;
+- `servicios.html` — capacidades, incluyendo IA aplicada;
+- `sectores.html` — gobierno digital, operación empresarial y sectores;
+- `empresa.html` — equipo, trayectoria profesional y activos propios;
+- `contacto.html` — contacto comercial.
 
-Abre:
+## Equipo y trayectoria
 
-```text
-http://localhost:8080
-```
+La página Empresa incorpora a José I. Estrada Hernández y Luz Adriana Hernández Morelos con los perfiles autorizados para el material corporativo.
 
-Si ya tienes el repositorio:
-
-```bash
-cd ~/Devs/arvecta
-git pull origin main
-dotnet restore
-dotnet run --urls http://localhost:8080
-```
-
-> `python3 -m http.server 8080` sigue sirviendo para revisar únicamente la parte visual, pero **no ejecuta `/api/contact`** y por tanto el formulario no enviará correos.
-
-## Configurar correo
-
-El proyecto reutiliza temporalmente la infraestructura SMTP de AI Regula Solutions mediante la sección `EmailSettings`.
-
-`appsettings.json` contiene sólo parámetros no secretos y deja usuario/password vacíos. **No pongas credenciales reales en ese archivo.**
-
-Crea un archivo local a partir del ejemplo:
-
-```bash
-cp appsettings.Local.example.json appsettings.Local.json
-```
-
-Después edita `appsettings.Local.json`:
-
-```json
-{
-  "EmailSettings": {
-    "SmtpUser": "TU_USUARIO_SMTP",
-    "SmtpPassword": "TU_PASSWORD_SMTP"
-  }
-}
-```
-
-`appsettings.Local.json` está incluido en `.gitignore` y no debe subirse al repositorio.
-
-También puedes sobrescribir cualquier valor mediante variables de entorno, por ejemplo:
-
-```bash
-export EmailSettings__SmtpUser="usuario"
-export EmailSettings__SmtpPassword="password"
-```
-
-### Configuración actual no secreta
-
-- SMTP: infraestructura temporal de AI Regula Solutions.
-- Remitente temporal: `info@airegulasolutions.com`.
-- Destino: `contacto@arvecta.mx`.
-- `Reply-To`: se establece automáticamente al correo que captura el prospecto, para que puedas responderle directamente.
-
-## Formulario de contacto
-
-`POST /api/contact`
-
-El endpoint:
-
-- valida nombre, correo y mensaje;
-- limita solicitudes por IP;
-- incorpora un honeypot básico;
-- escapa contenido antes de construir el HTML del correo;
-- envía el mensaje a `contacto@arvecta.mx`;
-- devuelve confirmación JSON al frontend;
-- no almacena los datos en una base de datos.
-
-Health check:
-
-```text
-GET /health/live
-```
-
-## Arquitectura
-
-```text
-/
-├── Arvecta.Web.csproj
-├── Program.cs
-├── appsettings.json
-├── appsettings.Local.example.json
-├── index.html
-├── servicios.html
-├── sectores.html
-├── empresa.html
-├── contacto.html
-├── 404.html
-├── assets/
-│   ├── css/site-v3.css
-│   ├── css/site-v4.css
-│   ├── css/contact-page.css
-│   └── js/site-v3.js
-└── brand/
-    ├── arvecta-logo.png
-    ├── arvecta-logo-white.png
-    ├── arvecta-symbol.png
-    ├── arvecta-symbol-white.png
-    ├── arvecta-system-field-v2.svg
-    └── BRAND-GUIDELINES.md
-```
+Los proyectos relacionados con CEESP, CONAMER, Municipio de Tulancingo de Bravo, Poder Judicial del Estado de Baja California, Tabasco, Morelos, Tamaulipas y Mejores Gobiernos se presentan explícitamente como **experiencia de la trayectoria profesional del equipo fundador** y no como cartera contractual de ARVECTA Technologies, S.A.S.
 
 ## Branding
 
-Masters PNG aprobados:
+Los activos de marca están en `brand/` y las fotografías corporativas del equipo en `brand/team/`.
 
-- `brand/arvecta-logo.png`
-- `brand/arvecta-logo-white.png`
-- `brand/arvecta-symbol.png`
-- `brand/arvecta-symbol-white.png`
+La hoja `assets/css/site-v5.css` extiende la capa visual existente para liderazgo, trayectoria, gobierno digital, operación empresarial, IA aplicada y prueba de experiencia en home.
 
-## Dominio
+## Desarrollo local
 
-- Web: `https://arvecta.mx`
-- Correo: `contacto@arvecta.mx`
+Proyecto web ASP.NET Core con contenido corporativo estático servido junto con la aplicación. Consultar los scripts y documentación de despliegue en `deploy/` y `docs/`.
 
-## Principio comercial
+## Contacto
 
-La web responde en este orden:
+- Sitio: https://arvecta.mx
+- Correo: contacto@arvecta.mx
 
-1. qué fricción operativa existe;
-2. qué resultado debe conseguirse;
-3. qué capacidad aplica ARVECTA;
-4. cómo se reduce riesgo de ejecución;
-5. cuál es el siguiente paso.
-
-## Derechos
-
-Código, branding, copy y activos visuales son propiedad de ARVECTA Technologies salvo indicación contraria.
+**Construir. Integrar. Evolucionar.**
